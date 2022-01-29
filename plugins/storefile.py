@@ -8,9 +8,8 @@ from config import *
 #################################### FOR PRIVATE ################################################
 @Client.on_message((filters.document|filters.video|filters.audio|filters.photo) & filters.incoming & ~filters.edited & ~filters.channel)
 async def storefile(c, m):
-    if IS_PRIVATE:
-        if m.from_user.id not in AUTH_USERS:
-            return
+    if IS_PRIVATE and m.from_user.id not in AUTH_USERS:
+        return
     send_message = await m.reply_text("**Processing...**", quote=True)
     media = m.document or m.video or m.audio or m.photo
     # text
@@ -63,9 +62,8 @@ async def storefile(c, m):
 
 @Client.on_message((filters.document|filters.video|filters.audio|filters.photo) & filters.incoming & filters.channel & ~filters.forwarded & ~filters.edited)
 async def storefile_channel(c, m):
-    if IS_PRIVATE:
-        if m.chat.id not in AUTH_USERS:
-            return
+    if IS_PRIVATE and m.chat.id not in AUTH_USERS:
+        return
     media = m.document or m.video or m.audio or m.photo
 
     # text

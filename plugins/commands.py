@@ -23,7 +23,7 @@ async def start(c, m, cb=False):
         send_msg = await m.reply_text("**Processing...**", quote=True)
 
     owner = await c.get_users(int(OWNER_ID))
-    owner_username = owner.username if owner.username else 'Ns_bot_updates'
+    owner_username = owner.username or 'Ns_bot_updates'
 
     # start text
     text = f"""Hey! {m.from_user.mention(style='md')}
@@ -85,10 +85,10 @@ async def start(c, m, cb=False):
 
         if msg.empty:
             return await send_msg.edit(f"🥴 Sorry bro your file was deleted by file owner or bot owner\n\nFor more help contact my owner 👉 {owner.mention(style='md')}")
-        
+
         caption = f"{msg.caption.markdown}\n\n\n" if msg.caption else ""
         as_uploadername = (await get_data(str(chat_id))).up_name
-        
+
         if as_uploadername:
             if chat_id.startswith('-100'):
                 channel = await c.get_chat(int(chat_id))
@@ -141,9 +141,8 @@ async def me(c, m):
 @Client.on_message(filters.command('batch') & filters.private & filters.incoming)
 async def batch(c, m):
     """ This is for batch command"""
-    if IS_PRIVATE:
-        if m.from_user.id not in AUTH_USERS:
-            return
+    if IS_PRIVATE and m.from_user.id not in AUTH_USERS:
+        return
     BATCH.append(m.from_user.id)
     files = []
     i = 1
@@ -188,12 +187,9 @@ async def batch(c, m):
 
 @Client.on_message(filters.command('mode') & filters.incoming & filters.private)
 async def set_mode(c,m):
-    if IS_PRIVATE:
-        if m.from_user.id not in AUTH_USERS:
-            return
-    usr = m.from_user.id
-    if len(m.command) > 1:
-        usr = m.command[1]
+    if IS_PRIVATE and m.from_user.id not in AUTH_USERS:
+        return
+    usr = m.command[1] if len(m.command) > 1 else m.from_user.id
     caption_mode = (await get_data(usr)).up_name
     if caption_mode:
        await update_as_name(str(usr), False)
@@ -205,12 +201,10 @@ async def set_mode(c,m):
 
 async def decode(base64_string):
     base64_bytes = base64_string.encode("ascii")
-    string_bytes = base64.b64decode(base64_bytes) 
-    string = string_bytes.decode("ascii")
-    return string
+    string_bytes = base64.b64decode(base64_bytes)
+    return string_bytes.decode("ascii")
 
 async def encode_string(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.b64encode(string_bytes)
-    base64_string = base64_bytes.decode("ascii")
-    return base64_string
+    return base64_bytes.decode("ascii")
